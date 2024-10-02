@@ -74,7 +74,7 @@ jobs:
       
       - run: echo "Building Frontend source code with 'npm' package manager"
       - name: Installing project dependencies (React).
-        run: npm install axios chart.js react-chartjs-2 react-chartjs-2 chart.js
+        run: npm install axios recharts 
       - run: echo "Install Dependencies completed successfully."
 
       - run: echo "Executing 'npm run build' to generate built src code."
