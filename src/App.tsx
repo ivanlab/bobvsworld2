@@ -54,6 +54,7 @@ const App: React.FC = () => {
     };
 
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dailyStdDev]); // Volver a ejecutar el efecto cuando cambie la desviación típica diaria
 
   const calculateProbability = (price: number, target: number, upperLimit: number, lowerLimit: number): number => {
