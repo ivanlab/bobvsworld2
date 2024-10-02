@@ -90,7 +90,7 @@ const App: React.FC = () => {
 
   return (
     <div className="container">
-      <h1>Bitcoin Price Probabilities</h1>
+      <h1>B3 (Bob BTC Bet) - 2024</h1>
       <ResponsiveContainer width="100%" height={400}>
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
