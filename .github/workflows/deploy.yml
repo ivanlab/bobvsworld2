@@ -1,0 +1,97 @@
+name: Build and Push Frontend Preproduction Built Code automatically docker hub on every release published.
+run-name: ${{ github.actor }} is building & pushing to Prod 
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  
+jobs:
+  Checkout-Code:
+    runs-on: ubuntu-latest
+  
+    steps:
+      - run: echo "Detecting changes in your branch ${{ github.ref }} from repository ${{ github.repository }}."
+      - name: Check out the repository changes.
+        uses: actions/checkout@v3
+      - run: echo "The${{ github.repository }} repository has been cloned to the runner."
+
+  Install-Tools:
+    needs: Checkout-Code
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Downloading Node & npm tools."
+      - name: Set up Node & npm package manger.
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: echo "Node & npm tools installed successfully."
+      - run: echo "Downloading image building tool."
+      - name: Set up Docker Buildx.
+        uses: docker/setup-buildx-action@v2
+
+  Docker-Login:
+    needs: Install-Tools
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Logging into DockerHub with credentials as GitHub secrets."
+      - name: Login to Docker Hub.
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - run: echo "Docker Login completed successfully."
+  Docker-meta:
+    needs: Install-Tools
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Extracting metadata for Backend image push (*Release specific tag*)."
+      - name: Extract metadata (tags, labels) for Docker.
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: ${{ env.IMAGE_TAGS }}
+
+      - run: echo "Metadata Extraction completed successfully."
+
+  Dependencies-Build:
+    needs: Install-Tools
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Logging into DockerHub with credentials as GitHub secrets."
+      - name: Login to Docker Hub.
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+      - run: echo "Docker Login completed successfully."      
+      - run: echo "Checking Out source Code from repo."
+      - name: Checkout Code from repo.
+        uses: actions/checkout@v3
+      - run: echo "Checkout Code completed successfully."
+      
+      - run: echo "Building Frontend source code with 'npm' package manager"
+      - name: Installing project dependencies (React).
+        run: npm install axios chart.js react-chartjs-2 react-chartjs-2 chart.js
+      - run: echo "Install Dependencies completed successfully."
+
+      - run: echo "Executing 'npm run build' to generate built src code."
+      - name: Building src Frontend code.
+        run: npm run build
+      - run: echo "Build Process completed successfully."
+
+      - run: echo "Last step to push tagged image to Nelium DockerHub."
+      - name: Build & Push Docker image.
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: >
+            ivanlab/${{ github.event.repository.name }}:latest
+
+
+      - run: echo "Docker Build & Upload completed successfully."
+
+      - run: echo "This job's status is ${{ job.status }}."
