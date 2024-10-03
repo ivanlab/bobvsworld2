@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    ingress.kubernetes.io/proxy-body-size: "0"
+    ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+  labels:
+    app: bobvsworld
+  name: bobvsworld-ingress
+  namespace: bobvsworld
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: bobvsworld.nelium.net
+    http:
+      paths:
+      - backend:
+          service:
+            name: bobvsworld
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
