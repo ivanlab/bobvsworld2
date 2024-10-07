@@ -20,7 +20,7 @@ const BET3 = 500000;
 const App: React.FC = () => {
   const [data, setData] = useState<DataPoint[]>([]);
   const [error, setError] = useState<Error | null>(null);
-  const [dailyStdDev, setDailyStdDev] = useState<number>(1000); // Estado para la desviación típica diaria
+  const [dailyStdDev, setDailyStdDev] = useState<number>(5000); // Estado para la desviación típica diaria
 
   useEffect(() => {
     const fetchData = async () => {
